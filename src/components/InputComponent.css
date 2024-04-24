@@ -1,0 +1,67 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0a3d64; /* Darker blue background for the entire screen */
+  color: #fff; /* Text color for the entire screen */
+}
+
+.form-container {
+  text-align: center;
+  padding: 50px 0; /* Added padding to the top and bottom of the form container */
+}
+
+.form-heading {
+  margin-bottom: 20px;
+}
+
+.form {
+  max-width: 400px;
+  margin: 0 auto; /* Centering the form horizontally */
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #addfff; /* Lighter blue background color for the form */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3); /* Box shadow */
+  color: #000; /* Text color within the form */
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px; /* Increased margin for better spacing */
+}
+
+.form-select,.form-input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #000; /* Black border for all form elements */
+  border-radius: 5px;
+}
+
+.form-input {
+  width: calc(100% - 22px); /* Adjusted width to make it smaller */
+}
+
+.form-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><polygon points="416,160 96,160 256,352 "></polygon></svg>') no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+}
+
+.response{
+  display: grid;
+  text-align: justify;
+  padding: 20px;
+  place-items: center; /* center both horizontally and vertically */
+  margin: 10px auto; /* Centers the container horizontally */
+}
+
+PackageCard{
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3); /* Box shadow */
+}
