@@ -10,6 +10,7 @@ function InputComponent() {
 
   const handleLanguageChange = (event) => {
     setLanguage(event.target.value);
+    setResponse('');
   };
 
   const handlePackageNameChange = (event) => {
@@ -19,27 +20,82 @@ function InputComponent() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    let apiUrl = '';
+    if (language === 'Ruby') {
+      apiUrl = 'http://localhost:5000/api/packageInfoRuby';
+    } else if (language === 'Python') {
+      apiUrl = 'http://localhost:5000/api/packageInfoPython';
+    } else if (language === 'NodeJS'){
+      apiUrl = 'http://localhost:5000/api/packageInfoNode';
+    } else if (language === 'Rust'){
+      apiUrl = 'http://localhost:5000/api/packageInfoRust';
+    }
+    // Add more conditions for other languages if needed
+
     try {
-      const response = await fetch(`http://localhost:5000/api/packageInfo?packageName=${encodeURIComponent(packageName)}`);
+      const response = await fetch(`${apiUrl}?packageName=${encodeURIComponent(packageName)}`);
       const responseData = await response.json();
+      console.log(responseData);
 
-      const mostRecentRelease = Object.keys(responseData.releases).reduce((a, b) => {
-        return a > b ? a : b;
-      });
+      let packageInfo = '';
+      if (language === 'Python'){
+        const mostRecentRelease = Object.keys(responseData.releases).reduce((a, b) => {
+          return a > b ? a : b;
+        });
 
-      // Get the upload_time of the most recent release
-      const mostRecentUploadTime = responseData.releases[mostRecentRelease][0].upload_time;
+        // Get the upload_time of the most recent release
+        const mostRecentUploadTime = responseData.releases[mostRecentRelease][0].upload_time;
+         packageInfo = {
+          "author_name": responseData.info.author,
+          "author_email": responseData.info.author_email,
+          "description": responseData.info.summary,
+          "vulnerabilities": responseData.vulnerabilities,
+          "upload_time" : mostRecentUploadTime,
+          "downloads" : responseData.data.last_month
+        };
+      }
 
+      else if(language === 'Ruby'){
 
-      //Extract required information and store in a dictionary
-      const packageInfo = {
-        "author_name": responseData.info.author,
-        "author_email": responseData.info.author_email,
-        "description": responseData.info.summary,
-        "vulnerabilities": responseData.vulnerabilities,
-        "upload_time" : mostRecentUploadTime,
-        "last_months_download" : responseData.data.last_month
-      };
+         packageInfo = {
+          "author_name" : responseData.authors,
+          "author_email" : "-",
+          "description" : responseData.info,
+          "vulnerabilities" : [],
+          "upload_time" : responseData.version_created_at,
+          "downloads" : responseData.version_downloads
+        }
+      }
+
+      else if(language === 'NodeJS'){
+        let author_name = "-";
+
+        if (responseData.hasOwnProperty("author"))
+          author_name = responseData.author.name;
+
+        packageInfo = {
+         "author_name" : author_name,
+         "author_email" :"-",
+         "description" : responseData.description,
+         "vulnerabilities" : [],
+         "upload_time" : "-",
+         "downloads" : responseData.downloads
+       }
+      }
+
+      else if(language === 'Rust'){
+        console.log(responseData.versions[0]);
+        let data = responseData.versions[0];
+        packageInfo = {
+         "author_name" : data.published_by.name,
+         "author_email" :"-",
+         "description" : responseData.crate.description,
+         "vulnerabilities" : [],
+         "upload_time" : data.created_at,
+         "downloads" : data.downloads
+       }
+      }
+
 
       setResponse(packageInfo);
     } catch (error) {
@@ -48,9 +104,9 @@ function InputComponent() {
         "author_name": "-",
         "author_email": "-",
         "description": "-",
-        "vulnerabilities": "",
+        "vulnerabilities": [],
         "upload_time" : "-",
-        "last_months_download" : "-"
+        "downloads" : "-"
       };
       setResponse(packageInfo);
     }
@@ -64,9 +120,10 @@ function InputComponent() {
           <label htmlFor="language" className="form-label">Language:</label>
           <select id="language" className="form-select" value={language} onChange={handleLanguageChange}>
             <option value="">Select a language</option>
-            <option value="JavaScript">JavaScript</option>
+            <option value="Ruby">Ruby</option>
             <option value="Python">Python</option>
-            {/* Add more options for other languages if needed */}
+            <option value="NodeJS">NodeJS</option>
+            <option value="Rust">Rust</option>
           </select>
         </div>
         <div className="form-group">
@@ -87,13 +144,13 @@ function InputComponent() {
           <div className="response">
             <h2>Response:</h2>
             <PackageCard
-            authorName={response.author_name}
-            authorEmail={response.author_email}
-            description={response.description}
-            vulnerabilities={response.vulnerabilities}
-            uploadTime={response.upload_time}
-            lastMonthsDownload={response.last_months_download}
-          />
+              authorName={response.author_name}
+              authorEmail={response.author_email}
+              description={response.description}
+              vulnerabilities={response.vulnerabilities}
+              uploadTime={response.upload_time}
+              downloads={response.downloads}
+            />
           </div>
         )}
       </div>
